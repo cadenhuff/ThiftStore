@@ -7,7 +7,17 @@ public class Customer implements Runnable {
 
     public void run(){
         tf.consume();
+
+        
     }
+
+
+
+    //Buy Function..... Run ever ten seconds
+
+
+
+
 
 
 
