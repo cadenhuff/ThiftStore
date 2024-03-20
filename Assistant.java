@@ -1,5 +1,5 @@
 public class Assistant implements Runnable {
-    private ThriftStore tf;
+    ThriftStore tf;
 
     public Assistant(ThriftStore tf){
         this.tf = tf;

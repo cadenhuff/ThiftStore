@@ -1,8 +1,7 @@
 
-
-
 public class ThriftStore{
 
+    //The funcs and fields in this class is just for testing
     private int data = 0;
 
     public synchronized void produce(){
@@ -15,29 +14,15 @@ public class ThriftStore{
         System.out.printf("%d\n",data);
     }
 
-    class Assistant implements Runnable {
-        
-        public void run(){
-            produce();
-        }
-    }
-
-    class Customer implements Runnable {
-    
-        public void run(){
-            consume();
-        }
-    
-    }
-
     public static void main(String[] args){
-        ThriftStore thriftStore = new ThriftStore();
+        //This section is gonna be moved to MAIN class
+        /*ThriftStore thriftStore = new ThriftStore();
         Runnable assistant = thriftStore.new Assistant();
         Runnable Customer = thriftStore.new Customer();
         Thread assistantThread = new Thread(assistant);
         assistantThread.start();
         Thread customerThread = new Thread(Customer);
-        customerThread.start();
+        customerThread.start();*/
 
 
 
