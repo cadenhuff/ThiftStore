@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftStore{
@@ -9,6 +10,7 @@ public class ThriftStore{
 
     public int electronics = 0;
 
+    public int clothing = 0;
 
 
 
@@ -42,20 +44,27 @@ public class ThriftStore{
 
     // need delivery function...... Actually Delivery could be its own thread
 
-
+    public void delivery(){
+        electronics++;
+        clothing++;
+    }
 
 
     public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
-        //int tick = 0;
-        //delivery.start();
-        //AtomicInteger tick = new AtomicInteger(0);
         
 
 
         
         //AtomicInteger tick = new AtomicInteger(0);
+        Random random = new Random();
+        int randomNumber = random.nextInt(10) + 1;
+        
         while (tick.get() < 100){
-            System.out.println("Tick: " + tick.incrementAndGet());
+            System.out.println("Tick: " + tick.incrementAndGet() + electronics + clothing);
+            //get time here
+
+
+            //Wait ThiS sleep is fucking stuff up cause its making it so the ticks last longer than a second. 
             try {
                 // Sleep for the specified delay
                 Thread.sleep(1000);
@@ -63,7 +72,24 @@ public class ThriftStore{
                 e.printStackTrace();
             }
 
+        
+            if(tick.get() == randomNumber){
+                delivery();
+            }
 
+
+
+
+            //Maybe put sleep below...should tick be its own thread???
+
+
+            //get time here, sub first and this time to get 1 - (second - first)
+            try {
+                // Sleep for the specified delay
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

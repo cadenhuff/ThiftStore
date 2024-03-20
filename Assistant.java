@@ -16,13 +16,6 @@ public class Assistant implements Runnable {
     public void run(){
         
 
-
-
-        
-
-
-
-
         //While Program still running
         while(true){
             Random random = new Random();
