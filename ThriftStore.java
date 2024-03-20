@@ -7,12 +7,14 @@ public class ThriftStore{
     //This could hold delivery, assistant could look at the delivery by reference of TF.
     public String[] delivery;
 
+    public int electronics = 0;
 
 
 
-    public synchronized void produce(){
+
+    public synchronized void produce(AtomicInteger tick){
         data++;
-        System.out.printf("%d\n",data);
+        System.out.printf("%d and time is %d\n",data, tick);
     }
 
     public synchronized void consume(){
@@ -25,18 +27,19 @@ public class ThriftStore{
 
 
 
-    public void thriftStoreDay(Thread assistant, Thread customer){
+    public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
         //int tick = 0;
         //delivery.start();
+        //AtomicInteger tick = new AtomicInteger(0);
         assistant.start();
         customer.start();
 
 
         //Using this to syncronize ticks between threads
-        AtomicInteger tick = new AtomicInteger(0);
+        //AtomicInteger tick = new AtomicInteger(0);
         while (tick.get() < 1000){
             System.out.println("Tick: " + tick.incrementAndGet());
-            
+
         }
     }
 
