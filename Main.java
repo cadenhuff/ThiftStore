@@ -23,8 +23,10 @@ public class Main {
         //Create a Customer
         Customer customer = new Customer(thriftStore);
 
+        //Create a Deliverer
+
         while(true){
-            thriftStore.thriftStoreDay();
+            thriftStore.thriftStoreDay(assistant, customer);
         }
             
          

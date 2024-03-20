@@ -15,10 +15,13 @@ public class ThriftStore{
         System.out.printf("%d\n",data);
     }
 
-    //delivery function
+    // need delivery function...... Actually Delivery could be its own thread
+
+
+
 
     public void thriftStoreDay(){
-        
+        //
     }
 
 
