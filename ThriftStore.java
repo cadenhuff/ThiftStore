@@ -3,7 +3,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ThriftStore{
 
     //The funcs and fields in this class is just for testing
-    private int data = 0;
+    public int data = 0;
     //This could hold delivery, assistant could look at the delivery by reference of TF.
     public String[] delivery;
 
@@ -13,13 +13,31 @@ public class ThriftStore{
 
 
     public synchronized void produce(AtomicInteger tick){
+        while(data == 5){
+            try{
+                wait();
+            }catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+        }
+        //Wait one second
         data++;
-        System.out.printf("%d and time is %d\n",data, tick);
+        notify();
+        System.out.printf("%d and time is %d\n",data, tick.get());
     }
 
-    public synchronized void consume(){
+    public synchronized void consume(AtomicInteger tick){
+        while(data == 0){
+            try {
+                wait(); // Waiting as the queue is full
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Reset the interrupted status
+            }
+        }
+        //Wait one second
         data--;
-        System.out.printf("%d\n",data);
+        notify();
+        System.out.printf("%d and time is %d\n",data, tick.get());
     }
 
     // need delivery function...... Actually Delivery could be its own thread
@@ -31,14 +49,20 @@ public class ThriftStore{
         //int tick = 0;
         //delivery.start();
         //AtomicInteger tick = new AtomicInteger(0);
-        assistant.start();
-        customer.start();
+        
 
 
-        //Using this to syncronize ticks between threads
+        
         //AtomicInteger tick = new AtomicInteger(0);
-        while (tick.get() < 1000){
+        while (tick.get() < 100){
             System.out.println("Tick: " + tick.incrementAndGet());
+            try {
+                // Sleep for the specified delay
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
 
         }
     }

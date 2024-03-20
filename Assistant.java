@@ -1,4 +1,5 @@
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 public class Assistant implements Runnable {
     ThriftStore tf;
@@ -13,10 +14,33 @@ public class Assistant implements Runnable {
 
 
     public void run(){
-        tf.produce(tick);
+        
 
 
-        //while...
+
+        
+
+
+
+
+        //While Program still running
+        while(true){
+            Random random = new Random();
+        
+            // Generate a random integer between 1 and 20 (inclusive)
+            int randomNumber = random.nextInt(10) + 1;
+            try {
+                // Sleep for the specified delay
+                Thread.sleep(randomNumber*1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            tf.produce(tick);
+            
+
+
+        }
 
 
         

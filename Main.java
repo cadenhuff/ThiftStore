@@ -9,7 +9,7 @@ public class Main{
 
 
     public static void main(String[] args){
-        
+        //Using this to syncronize ticks between threads
         AtomicInteger tick = new AtomicInteger(0);
         //Create Thrift Store Object
         ThriftStore thriftStore = new ThriftStore();
@@ -23,11 +23,14 @@ public class Main{
         //Create a Deliverer
 
         //Main while loop that will continue running forevewr since thrift store is open forever.
+        assistantThread.start();
+        customerThread.start();
         while(true){
 
             thriftStore.thriftStoreDay(assistantThread, customerThread,tick);
+            break;
             //reset tick
-            tick.set(0);
+            //tick.set(0);
             
         }
             
