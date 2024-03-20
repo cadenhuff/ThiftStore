@@ -6,7 +6,13 @@ public class Assistant implements Runnable {
     }
 
 
+
+
     public void run(){
         tf.produce();
+
+
+        //while...
+        
     }
 }
