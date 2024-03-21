@@ -27,12 +27,14 @@ public class Deliverer implements Runnable{
             
         }
         //Do i need syncrnoized here
+        String result = String.join(",", selectedSections);
+        System.out.printf("<%d> <%s> Deposit of Items [%s]\n",tick.get(), Thread.currentThread().getId(), result);
         tf.delivery = selectedSections;
         tf.isDelivered = true;
 
-        String result = String.join(",", selectedSections);
+        
 
-        System.out.printf("<%d> <%s> Deposit of Items [%s]\n",tick.get(), Thread.currentThread().getId(), result);
+        
     }
 
     public void run() {

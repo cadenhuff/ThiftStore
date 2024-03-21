@@ -42,19 +42,7 @@ public class ThriftStore{
         //Could have waiting for ticks in here
     }
 
-    public synchronized void buy(){
-        Random random = new Random();
-        int randomNumber = random.nextInt(6);
-        try{
-            while(storeInventory.get(sections[randomNumber]) == 0){
-                System.out.println("Nothign in this section gonna wait ");
-                wait();
-            }
-        }catch(InterruptedException e){
-            e.printStackTrace();
-        }
-        System.out.println("Found it");
-    }
+    
 
     public void printInventory(){
         Enumeration<String> k = storeInventory.keys();
@@ -70,13 +58,13 @@ public class ThriftStore{
     public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
         
         while(tick.get() < NUM_TICKS){
-            printInventory();
+            //printInventory();
             try{
                 Thread.sleep(1000);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
-            System.out.printf("%d\n", tick.get());
+            //System.out.printf("%d\n", tick.get());
             tick.getAndIncrement();
             //notify();
 

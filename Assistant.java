@@ -58,6 +58,7 @@ public class Assistant implements Runnable {
     public void stock(){
         //Look at first item in inventory
         //this first while loop might be buggy
+        //NEED TO MAKE INVENTORY A DICT
         while(inventory[0] != null){
             int tickToPerformAction = tick.get() + 10 + (countNumsInInventory());
             System.out.printf("<%d> <%s> Assistant Began Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),inventory[countNumsInInventory()-1],tf.storeInventory.get(inventory[countNumsInInventory()-1]));
