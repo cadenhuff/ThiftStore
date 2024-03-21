@@ -1,7 +1,16 @@
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftStore{
+
+    public static final int NUM_THREADS = 2;
+    public static final int NUM_TICKS = 1000;
+    public static final Semaphore tickSemaphore = new Semaphore(0);
+    
+
+
+
 
     //The funcs and fields in this class is just for testing
     public int data = 0;
@@ -52,45 +61,29 @@ public class ThriftStore{
 
     public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
         
-
-
-        
-        //AtomicInteger tick = new AtomicInteger(0);
-        Random random = new Random();
-        int randomNumber = random.nextInt(10) + 1;
-        
-        while (tick.get() < 100){
-            System.out.println("Tick: " + tick.incrementAndGet() + electronics + clothing);
-            //get time here
-
-
-            //Wait ThiS sleep is fucking stuff up cause its making it so the ticks last longer than a second. 
+        while(tick.get() < NUM_TICKS){
+            // Allow both assistant and customer to proceed for the current tick
+            
+            tickSemaphore.release(NUM_THREADS);
+            
+            // Wait for all threads to finish their work for the current tick
             try {
-                // Sleep for the specified delay
+                //Thread.sleep(1000);
+                tickSemaphore.acquire(NUM_THREADS);
+                tick.incrementAndGet();
                 Thread.sleep(1000);
+                
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-        
-            if(tick.get() == randomNumber){
-                delivery();
-            }
-
-
-
-
-            //Maybe put sleep below...should tick be its own thread???
-
-
-            //get time here, sub first and this time to get 1 - (second - first)
-            try {
-                // Sleep for the specified delay
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+         
+            // Progress to the next tick
+            tick.incrementAndGet();
+           
+            
+         
         }
+        
     }
 
 

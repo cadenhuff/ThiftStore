@@ -1,12 +1,9 @@
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 
 public class Main{
-    private static final int NUM_THREADS = 3;
-    private static final int NUM_TICKS = 100;
-    private static final Semaphore tickSemaphore = new Semaphore(0);
+    
     
 
 
@@ -28,7 +25,7 @@ public class Main{
         //Main while loop that will continue running forevewr since thrift store is open forever.
         assistantThread.start();
         customerThread.start();
-        while(tick.get() < NUM_TICKS){
+        while(true){
 
             thriftStore.thriftStoreDay(assistantThread, customerThread,tick);
             break;

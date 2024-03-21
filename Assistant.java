@@ -16,23 +16,30 @@ public class Assistant implements Runnable {
     public void run(){
         
 
-        //While Program still running
-        while(true){
-            Random random = new Random();
         
-            // Generate a random integer between 1 and 20 (inclusive)
-            int randomNumber = random.nextInt(10) + 1;
+        while (tick.get() < tf.NUM_TICKS) {
+            
             try {
-                // Sleep for the specified delay
-                Thread.sleep(randomNumber*1000);
+                // Wait for the semaphore to be released indicating the start of a new tick
+                ThriftStore.tickSemaphore.acquire();
+                //Thread.sleep(1000);
+                System.out.println("Hi " );
+                
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            tf.produce(tick);
+           
+            System.out.println("Assistant's task for tick " + tick.get());
+                
+                // Allow the thrift store to proceed
             
-
-
+            try{
+                Thread.sleep(1000);
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+            ThriftStore.tickSemaphore.release();
         }
 
 
