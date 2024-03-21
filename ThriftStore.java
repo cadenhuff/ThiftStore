@@ -1,13 +1,14 @@
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftStore{
 
-    public static final int NUM_THREADS = 2;
+    public static final int NUM_THREADS = 1;
     public static final int NUM_TICKS = 1000;
     public static final Semaphore tickSemaphore = new Semaphore(0);
-    
+    public static final CountDownLatch latch = new CountDownLatch(NUM_THREADS);
 
 
 
@@ -62,25 +63,15 @@ public class ThriftStore{
     public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
         
         while(tick.get() < NUM_TICKS){
-            // Allow both assistant and customer to proceed for the current tick
-            
-            tickSemaphore.release(NUM_THREADS);
-            
-            // Wait for all threads to finish their work for the current tick
-            try {
-                //Thread.sleep(1000);
-                tickSemaphore.acquire(NUM_THREADS);
-                tick.incrementAndGet();
-                Thread.sleep(1000);
-                
-            } catch (InterruptedException e) {
+            try{
+                Thread.sleep(20000);
+            }catch(InterruptedException e){
                 e.printStackTrace();
             }
-         
-            // Progress to the next tick
-            tick.incrementAndGet();
-           
-            
+            System.out.printf("%d", tick.get());
+            tick.getAndIncrement();
+            //notify();
+
          
         }
         

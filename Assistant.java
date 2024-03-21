@@ -14,39 +14,22 @@ public class Assistant implements Runnable {
 
 
     public void run(){
-        
-
-        
-        while (tick.get() < tf.NUM_TICKS) {
-            
-            try {
-                // Wait for the semaphore to be released indicating the start of a new tick
-                ThriftStore.tickSemaphore.acquire();
-                //Thread.sleep(1000);
-                System.out.println("Hi " );
-                
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while(true){
+            int tickToPerformAction = tick.get() + 10;
+            System.out.printf(" Assisnt waitinf for %d",tickToPerformAction);
            
-            System.out.println("Assistant's task for tick " + tick.get());
                 
-                // Allow the thrift store to proceed
+                while (tick.get() < tickToPerformAction) {
+                    
+                      
+                }
+                    System.out.println("heeeyy");
+                
             
-            try{
-                Thread.sleep(1000);
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            ThriftStore.tickSemaphore.release();
         }
 
-
         
 
-
-        
     }
 
     
