@@ -21,10 +21,12 @@ public class Main{
         Thread customerThread = new Thread(customer);
 
         //Create a Deliverer
-
+        Deliverer deliverer = new Deliverer(thriftStore, tick)
+        Thread delivererThread = new Thread(deliverer);
         //Main while loop that will continue running forevewr since thrift store is open forever.
         assistantThread.start();
         customerThread.start();
+        delivererThread.start();
         while(true){
 
             thriftStore.thriftStoreDay(assistantThread, customerThread,tick);

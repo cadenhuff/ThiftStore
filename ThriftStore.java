@@ -7,8 +7,6 @@ public class ThriftStore{
 
     public static final int NUM_THREADS = 1;
     public static final int NUM_TICKS = 1000;
-    public static final Semaphore tickSemaphore = new Semaphore(0);
-    public static final CountDownLatch latch = new CountDownLatch(NUM_THREADS);
 
 
 
@@ -23,6 +21,7 @@ public class ThriftStore{
     public int clothing = 0;
 
 
+    
 
     public synchronized void produce(AtomicInteger tick){
         while(data == 5){
