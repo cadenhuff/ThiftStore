@@ -63,7 +63,7 @@ public class ThriftStore{
         
         while(tick.get() < NUM_TICKS){
             try{
-                Thread.sleep(20000);
+                Thread.sleep(1000);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
