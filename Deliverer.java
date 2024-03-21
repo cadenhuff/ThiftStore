@@ -18,7 +18,7 @@ public class Deliverer implements Runnable{
 
 
     public void deliver(){
-
+        
         String[] selectedSections = new String[10];
 
         Random random = new Random();
@@ -26,22 +26,30 @@ public class Deliverer implements Runnable{
             selectedSections[i] = sections[random.nextInt(5) + 0];
             
         }
+        //Do i need syncrnoized here
         tf.delivery = selectedSections;
+        tf.isDelivered = true;
 
-        
+        String result = String.join(",", selectedSections);
+
+        System.out.printf("<%d> <%s> Deposit of Items [%s]\n",tick.get(), Thread.currentThread().getId(), result);
     }
 
     public void run() {
         while(true){
+            //instead of 10 put a probablitstic num
             int tickToPerformAction = tick.get() + 10;
-            System.out.printf(" Deliverer waiting for %d\n",tickToPerformAction);
+            //System.out.printf(" Deliverer waiting for %d\n",tickToPerformAction);
            
             //This works, however it is definitly not optimal as it wastes CPU cycles? 
             while (tick.get() < tickToPerformAction) {
                     
                       
             }
-            deliver();
+            if(!tf.isDelivered){
+                deliver();
+            }
+            
                 
         }
         
