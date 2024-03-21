@@ -1,6 +1,7 @@
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
@@ -34,12 +35,71 @@ public class ThriftStore{
         }
     }
 
+    private int countNumsInInventory(Dictionary<String,Integer> inventory) {
+        int count = 0;
+        for (int val : ((Hashtable<String, Integer>) inventory).values()) {
+            count += val;
+        }
+        return count;
+    }
 
 
-    
+    private static boolean allValuesAreZero(Dictionary<String, Integer> map) {
+        for (int value : ((Hashtable<String, Integer>) map).values()) {
+            if (value != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-    public synchronized void stock(int section){
-        //Could have waiting for ticks in here
+
+    public void stock(Dictionary<String,Integer> inventory, AtomicInteger tick){
+
+        //Look at first item in inventory
+        //this first while loop might be buggy
+        //NEED TO MAKE INVENTORY A DICT
+        while(!inventory.isEmpty() && !allValuesAreZero(inventory)){
+            int tickToPerformAction = tick.get() + 10 + (countNumsInInventory(inventory));
+            System.out.println(inventory);
+            String sectionToStock = "";
+            Enumeration<String> keys = inventory.keys();
+            while (keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                int value = inventory.get(key);
+                if (value > 0){
+                    sectionToStock = key; 
+                    break;
+                }
+            }
+            System.out.printf("<%d> <%s> Assistant Began Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),sectionToStock,storeInventory.get(sectionToStock));
+            while(tick.get() < tickToPerformAction){
+
+            }
+            //When I put this func into Thriftstore class, change tf.storeInventory to this
+            //This right here is the critical section, but only critical for the speific section that the assistant is stocking...In other
+            //Words two assistants can stock differnest sections, but jsut not the same one. 
+
+
+            
+            synchronized(storeInventory){
+                int currentValue = storeInventory.get(sectionToStock);
+
+                // Increment the value by how many in
+
+                int newValue = currentValue + inventory.get(sectionToStock);
+                
+
+                // Put the new value back into the dictionary
+                storeInventory.put(sectionToStock, newValue);
+                System.out.printf("<%d> <%s> Assistant Finished Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),sectionToStock,storeInventory.get(sectionToStock));
+
+            }
+            //delete from inventory
+            
+            inventory.put(sectionToStock, 0);
+            System.out.println(storeInventory);
+        }
     }
 
     
@@ -59,8 +119,9 @@ public class ThriftStore{
         
         while(tick.get() < NUM_TICKS){
             //printInventory();
+            //System.out.println(storeInventory);
             try{
-                Thread.sleep(1000);
+                Thread.sleep(50);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }

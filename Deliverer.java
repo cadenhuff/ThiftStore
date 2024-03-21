@@ -39,8 +39,15 @@ public class Deliverer implements Runnable{
 
     public void run() {
         while(true){
-            //instead of 10 put a probablitstic num
-            int tickToPerformAction = tick.get() + 10;
+            
+            Random random = new Random();
+
+            double randomValue = random.nextGaussian() * 100 + 15;
+
+            // Round the value to the nearest integer
+            int randomInt = (int) Math.round(randomValue);
+
+            int tickToPerformAction = tick.get() + randomInt;
             //System.out.printf(" Deliverer waiting for %d\n",tickToPerformAction);
            
             //This works, however it is definitly not optimal as it wastes CPU cycles? 
@@ -48,6 +55,10 @@ public class Deliverer implements Runnable{
                     
                       
             }
+            //while((random.nextInt(100) + 1) != 100){
+
+            //c}
+            
             if(!tf.isDelivered){
                 deliver();
             }

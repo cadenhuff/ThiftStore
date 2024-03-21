@@ -27,7 +27,7 @@ public class Customer implements Runnable {
         }catch(InterruptedException e){
             e.printStackTrace();
         }
-        System.out.println("Found it");
+        //System.out.println("Found it");
         synchronized(tf.storeInventory){
             int currentValue = tf.storeInventory.get(tf.sections[randomNumber]);
 

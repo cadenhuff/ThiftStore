@@ -1,18 +1,22 @@
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
 public class Assistant implements Runnable {
     ThriftStore tf;
     AtomicInteger tick;
-    public String[] inventory;
+    Dictionary<String, Integer> inventory= new Hashtable<>();
 
     public Assistant(ThriftStore tf, AtomicInteger tick){
         this.tf = tf;
         this.tick = tick;
-        this.inventory = new String[10];
+        for(int i = 0; i<6; i++){
+            inventory.put(tf.sections[i],0);
+        }
         
     }
 
@@ -32,8 +36,9 @@ public class Assistant implements Runnable {
             }
 
             // Copy items from the list to the assistant's inventory
-            for (int i = 0; i < itemsToAdd.size(); i++) {
-                inventory[i] = itemsToAdd.get(i);
+            for (String item : itemsToAdd) {
+
+                inventory.put(item, inventory.get(item) + 1);
             }
 
             // Remove items from delivery
@@ -43,44 +48,8 @@ public class Assistant implements Runnable {
         }
         //notify();
     }
-    public int countNumsInInventory(){
-        int count = 0;
-        for (String str : inventory) {
-            if (str != null) {
-                count++;
-            }
-        }
 
 
-
-        return count;
-    }
-    public void stock(){
-        //Look at first item in inventory
-        //this first while loop might be buggy
-        //NEED TO MAKE INVENTORY A DICT
-        while(inventory[0] != null){
-            int tickToPerformAction = tick.get() + 10 + (countNumsInInventory());
-            System.out.printf("<%d> <%s> Assistant Began Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),inventory[countNumsInInventory()-1],tf.storeInventory.get(inventory[countNumsInInventory()-1]));
-            while(tick.get() < tickToPerformAction){
-
-            }
-            
-            synchronized(tf.storeInventory){
-                int currentValue = tf.storeInventory.get(inventory[countNumsInInventory()-1]);
-
-                
-
-                // Increment the value by one
-                int newValue = currentValue + 1;
-                System.out.println("IM HERE");
-
-                // Put the new value back into the dictionary
-                tf.storeInventory.put(inventory[countNumsInInventory() - 1], newValue);
-                System.out.printf("<%d> <%s> Assistant Finished Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),inventory[countNumsInInventory()-1],tf.storeInventory.get(inventory[countNumsInInventory()-1]));
-            }
-        }
-    }
 
 
 
@@ -100,7 +69,7 @@ public class Assistant implements Runnable {
                     
                     unload();
                     //After adding those items to our inventory, we can begin to stock
-                    stock();
+                    tf.stock(inventory, tick);
                     
             
 
