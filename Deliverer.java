@@ -1,6 +1,4 @@
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,19 +14,20 @@ public class Deliverer implements Runnable{
         this.tick = tick;
     }
 
-
+    //Creates an array of ten strings containing a random set of ThriftStore sections.
     public void deliver(){
         
         String[] selectedSections = new String[10];
-
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
-            selectedSections[i] = sections[random.nextInt(5) + 0];
+            selectedSections[i] = sections[random.nextInt(6) + 0];
             
         }
-        //Do i need syncrnoized here
+        
         String result = String.join(",", selectedSections);
         System.out.printf("<%d> <%s> Deposit of Items [%s]\n",tick.get(), Thread.currentThread().getId(), result);
+
+        //Updates the ThriftStore's current delivery and sets isDelivered bool to true
         tf.delivery = selectedSections;
         tf.isDelivered = true;
 
@@ -37,28 +36,26 @@ public class Deliverer implements Runnable{
         
     }
 
+    @Override    
     public void run() {
         while(true){
-            //I still dont know how right that is
+            
+
+            //To have deliveries come every 100 ticks, we used a gaussian Distribution with a mean of 100 to obtain the number of ticks
+            //a Deliverer should wait untill they can deliver.
             Random random = new Random();
-
             double randomValue = Math.abs(random.nextGaussian() * 50 + 100);
-
             // Round the value to the nearest integer
             int randomInt = (int) Math.round(randomValue);
-            System.out.println(randomInt);
+
+            
             int tickToPerformAction = tick.get() + randomInt;
-            //System.out.printf(" Deliverer waiting for %d\n",tickToPerformAction);
-           
-            //This works, however it is definitly not optimal as it wastes CPU cycles? 
             while (tick.get() < tickToPerformAction) {
                     
                       
             }
-            //while((random.nextInt(100) + 1) != 100){
-
-            //}
             
+            //If there isn't already a delivery waiting for an assistant.
             if(!tf.isDelivered){
                 deliver();
             }

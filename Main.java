@@ -1,42 +1,115 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 
 public class Main{
-    
+    static int numOfAssistants = 1;
+    static int numOfCustomers = 1;
+    static int tickLength = 1000;
+    static int daysToRun = 10;
 
     public static void main(String[] args){
+        //Takes in User input for number of assistants and customers and for tick length with Error Handling.
+        Scanner scanner = new Scanner(System.in);
+
+        boolean validInput = false;
+        while(!validInput){
+            try{
+                System.out.print("Number of Assistants: ");
+                numOfAssistants = scanner.nextInt();
+                validInput = true;
+
+            }catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter an integer.");
+                scanner.next(); // Consume the invalid input
+            }
+
+        }
+        validInput = false;
+        while(!validInput){
+            try{
+                System.out.print("Number of Customers: ");
+                numOfCustomers = scanner.nextInt();
+                validInput = true;
+
+            }catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter an integer.");
+                scanner.next(); // Consume the invalid input
+            }
+
+        }
+
+        validInput = false;
+        while(!validInput){
+            try{
+                System.out.print("Tick Length in Milliseconds: ");
+                tickLength = scanner.nextInt();
+                validInput = true;
+            }catch (InputMismatchException e){
+                System.out.println("Invalid input! Please enter an integer.");
+                scanner.next();
+            }
+        }
+
+        validInput = false;
+        while(!validInput){
+            try{
+                System.out.print("Days to Run: ");
+                daysToRun = scanner.nextInt();
+                validInput = true;
+            }catch (InputMismatchException e){
+                System.out.println("Invalid input! Please enter an integer.");
+                scanner.next();
+            }
+        }
+
+
+        scanner.close();
+
+
         //Using this to syncronize ticks between threads
         AtomicInteger tick = new AtomicInteger(0);
         //Create Thrift Store Object
         ThriftStore thriftStore = new ThriftStore();
-        //Create an Assistant 
-        Assistant assistant = new Assistant(thriftStore,tick);
-        Thread assistantThread = new Thread(assistant);
-        Assistant assistant2 = new Assistant(thriftStore,tick);
-        Thread assistantThread2 = new Thread(assistant2);
-        //Create a Customer
-        Customer customer1 = new Customer(thriftStore,tick);
-        Thread customerThread1 = new Thread(customer1);
-        //Create a Customer
-        Customer customer2 = new Customer(thriftStore,tick);
-        Thread customerThread2 = new Thread(customer2);
+        //Create Assistant Threads
+        Thread[] assistants = new Thread[numOfAssistants];
+        for (int i = 0; i<numOfAssistants; i++){
+            assistants[i] = new Thread(new Assistant(thriftStore, tick,daysToRun));
+        }
+        //Create Customer Threads
+        Thread[] customers = new Thread[numOfCustomers];
 
-        //Create a Deliverer
+        for (int i = 0; i<numOfCustomers; i++){
+            customers[i] = new Thread(new Customer(thriftStore, tick));
+        }
+        
+    
+        //Create a Deliverer (Only need one for Project Specifications however using the same methods as Customers and Assistants can create multiple)
         Deliverer deliverer = new Deliverer(thriftStore, tick);
         Thread delivererThread = new Thread(deliverer);
-        //Main while loop that will continue running forevewr since thrift store is open forever.
-        assistantThread.start();
-        customerThread1.start();
-        customerThread2.start();
+        
+
+        //Start all the assistants
+        for (Thread thread : assistants) {
+            thread.start();
+        }
+        //Start all the Customers
+        for (Thread thread : customers) {
+            thread.start();
+        }
+        //Start the deliverer
         delivererThread.start();
-        //assistantThread2.start();
+        
+        //Main while loop that will continue running forever since thrift store is open forever.
         while(true){
-            //Do i even need to pass in those threads....
-            thriftStore.thriftStoreDay(tick);
-            break;
-            //reset tick
-            //tick.set(0);
+            
+            //ThriftStore method to simulate one day
+            thriftStore.thriftStoreDay(tick,tickLength,daysToRun);
+            
+            
+            
             
         }
             

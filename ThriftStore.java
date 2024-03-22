@@ -5,21 +5,15 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftStore{
-
-    public static final int NUM_THREADS = 1;
     public static final int NUM_TICKS = 1000;
     String[] sections = {"electronics", "clothes", "furniture", "toys", "sporting goods", "books"};
 
 
-
-    //The funcs and fields in this class is just for testing
-    public int data = 0;
-    //This could hold delivery, assistant could look at the delivery by reference of TF.
+    //Holds the delivery that was delivered by the Deliverer Thread
     public String[] delivery;
+    //bool Value that lets assistants know if there is a delivery present in the store
     public boolean isDelivered;
-
-
-    //Maybe shoudlnt use dict cause if both customer and prod want to access differnet sections... jhow would that work
+    //Dictionary that holds storeInventory
     Dictionary<String, Integer> storeInventory= new Hashtable<>();
     
     
@@ -27,37 +21,22 @@ public class ThriftStore{
         this.delivery = new String[10];
         this.isDelivered = false;
         
+        //Initialize storeInventroy with 5 items in each section
         for(int i = 0; i<6; i++){
             storeInventory.put(sections[i],5);
         }
     }
 
-    private int countNumsInInventory(Dictionary<String,Integer> inventory) {
-        int count = 0;
-        for (int val : ((Hashtable<String, Integer>) inventory).values()) {
-            count += val;
-        }
-        return count;
-    }
-
-
-    private static boolean allValuesAreZero(Dictionary<String, Integer> map) {
-        for (int value : ((Hashtable<String, Integer>) map).values()) {
-            if (value != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
+    
+    
 
     public void buy(AtomicInteger tick){
+        //Used Gaussian Distribution to get an average of 10 ticks per customer for purchases.s
         Random random = new Random();
-
         double randomValue = Math.abs(random.nextGaussian() * 5 + 10);
         int randomNumber = (int) Math.round(randomValue);
-
         int tickToPerformAction = tick.get() + randomNumber;
-        System.out.println(randomNumber);
+        
 
         while (tick.get() < tickToPerformAction) {
                     
@@ -65,39 +44,37 @@ public class ThriftStore{
         }
         int randomInt = random.nextInt(6);
     
-        try{
-            while(storeInventory.get(sections[randomInt]) == 0){
-                System.out.println("Nothign in this section gonna wait ");
-                wait();
-            }
-        }catch(InterruptedException e){
-            e.printStackTrace();
+        //Wait if there is nothing in the given section.
+        if(storeInventory.get(sections[randomInt]) == 0){
+            System.out.printf("<%d> <%s> Customer Waiting for %s \n",tick.get(), Thread.currentThread().getId(),sections[randomInt]);
+            
         }
+        while(storeInventory.get(sections[randomInt]) == 0){}
         
+
+        //Only want one thread at a time to access storeInventory at a given time since this is critical data
         synchronized(storeInventory){
             int currentValue = storeInventory.get(sections[randomInt]);
 
-            
-
-            // Increment the value by one
+            // Decrement the value by one
             int newValue = currentValue - 1;
-            //System.out.println("IM HERE");
-
+            
             // Put the new value back into the dictionary
             storeInventory.put(sections[randomInt], newValue);
             System.out.printf("<%d> <%s> Customer Bought %s \n",tick.get(), Thread.currentThread().getId(),sections[randomInt]);
+            
         }
-        //notify();
+        
     }
 
     public void stock(Dictionary<String,Integer> inventory, AtomicInteger tick){
 
-        //Look at first item in inventory
-        //this first while loop might be buggy
-        //NEED TO MAKE INVENTORY A DICT
+        //Run until out of items  in Inventory
         while(!inventory.isEmpty() && !allValuesAreZero(inventory)){
+            //Determine how long it will take to get to section with given number of items in inventory
             int tickToPerformAction = tick.get() + 10 + (countNumsInInventory(inventory));
-            System.out.println(inventory);
+            
+            //Determine section to stock
             String sectionToStock = "";
             Enumeration<String> keys = inventory.keys();
             while (keys.hasMoreElements()) {
@@ -112,34 +89,48 @@ public class ThriftStore{
             while(tick.get() < tickToPerformAction){
 
             }
-            //When I put this func into Thriftstore class, change tf.storeInventory to this
-            //This right here is the critical section, but only critical for the speific section that the assistant is stocking...In other
-            //Words two assistants can stock differnest sections, but jsut not the same one. 
-
+            
 
             
+
+            //Use synchronize keyword to only allow one thread to access storeInventory data at a given time. 
             synchronized(storeInventory){
                 int currentValue = storeInventory.get(sectionToStock);
 
-                // Increment the value by how many in
-
+                // Increment the value by how many in inventory
                 int newValue = currentValue + inventory.get(sectionToStock);
                 
-
-                // Put the new value back into the dictionary
+                // Put the new value back into the store Inventory
                 storeInventory.put(sectionToStock, newValue);
                 System.out.printf("<%d> <%s> Assistant Finished Stocking Section %s = %d\n",tick.get(), Thread.currentThread().getId(),sectionToStock,storeInventory.get(sectionToStock));
 
             }
             //delete from inventory
-            
             inventory.put(sectionToStock, 0);
-            System.out.println(storeInventory);
+
         }
     }
 
-    
+    //Helper Function for stock
+    private int countNumsInInventory(Dictionary<String,Integer> inventory) {
+        int count = 0;
+        for (int val : ((Hashtable<String, Integer>) inventory).values()) {
+            count += val;
+        }
+        return count;
+    }
 
+    //Helper Function for Stock
+    private static boolean allValuesAreZero(Dictionary<String, Integer> map) {
+        for (int value : ((Hashtable<String, Integer>) map).values()) {
+            if (value != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    //Prints the current store inventory...Used for Testing
     public void printInventory(){
         Enumeration<String> k = storeInventory.keys();
         while (k.hasMoreElements()) {
@@ -150,23 +141,24 @@ public class ThriftStore{
 
     }
 
-
-    public void thriftStoreDay( AtomicInteger tick){
+    //Primary Function of ThriftStore Object
+    //This function serves as the "tick" that all other threads look to do determine when to make their decisions
+    public void thriftStoreDay( AtomicInteger tick, int tickLength,int daysToRun){
         
-        while(tick.get() < NUM_TICKS){
-            //printInventory();
-            //System.out.println(storeInventory);
+        while(tick.get() < (NUM_TICKS * daysToRun) ){
+            
             try{
-                Thread.sleep(100);
+                Thread.sleep(tickLength);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
-            //System.out.printf("%d\n", tick.get());
+            
             tick.getAndIncrement();
-            //notify();
+            
 
          
         }
+        
         
     }
 

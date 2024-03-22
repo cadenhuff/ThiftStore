@@ -1,4 +1,4 @@
-import java.util.Random;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -12,11 +12,13 @@ public class Customer implements Runnable {
     }
 
 
+    @Override
     public void run(){
-                //While Program still running
+        
+
+        //Since Customer's one job is to buy, we basically just allow the buy function to define a Customers complete exectution.
         while(true){
-            //when I dont have this system print,,, concurrency doesnt work wtf
-            //System.out.printf("This is customer %s\n",Thread.currentThread().getId());
+            
             tf.buy(tick);
 
         }
@@ -26,7 +28,7 @@ public class Customer implements Runnable {
 
 
 
-    //Buy Function..... Run ever ten seconds
+    
 
 
 
