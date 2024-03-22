@@ -42,11 +42,11 @@ public class Deliverer implements Runnable{
             
             Random random = new Random();
 
-            double randomValue = random.nextGaussian() * 100 + 15;
+            double randomValue = Math.abs(random.nextGaussian() * 100 + 15);
 
             // Round the value to the nearest integer
             int randomInt = (int) Math.round(randomValue);
-
+            System.out.println(randomInt);
             int tickToPerformAction = tick.get() + randomInt;
             //System.out.printf(" Deliverer waiting for %d\n",tickToPerformAction);
            

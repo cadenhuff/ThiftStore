@@ -115,7 +115,7 @@ public class ThriftStore{
     }
 
 
-    public void thriftStoreDay(Thread assistant, Thread customer, AtomicInteger tick){
+    public void thriftStoreDay( AtomicInteger tick){
         
         while(tick.get() < NUM_TICKS){
             //printInventory();
