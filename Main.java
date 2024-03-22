@@ -4,9 +4,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main{
     
-    
-
-
 
     public static void main(String[] args){
         //Using this to syncronize ticks between threads
@@ -16,6 +13,8 @@ public class Main{
         //Create an Assistant 
         Assistant assistant = new Assistant(thriftStore,tick);
         Thread assistantThread = new Thread(assistant);
+        Assistant assistant2 = new Assistant(thriftStore,tick);
+        Thread assistantThread2 = new Thread(assistant2);
         //Create a Customer
         Customer customer1 = new Customer(thriftStore,tick);
         Thread customerThread1 = new Thread(customer1);
@@ -31,6 +30,7 @@ public class Main{
         customerThread1.start();
         customerThread2.start();
         delivererThread.start();
+        //assistantThread2.start();
         while(true){
             //Do i even need to pass in those threads....
             thriftStore.thriftStoreDay(tick);

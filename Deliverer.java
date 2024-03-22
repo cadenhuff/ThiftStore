@@ -57,7 +57,7 @@ public class Deliverer implements Runnable{
             }
             //while((random.nextInt(100) + 1) != 100){
 
-            //c}
+            //}
             
             if(!tf.isDelivered){
                 deliver();

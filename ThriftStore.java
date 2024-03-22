@@ -1,10 +1,7 @@
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThriftStore{
@@ -53,6 +50,45 @@ public class ThriftStore{
         return true;
     }
 
+    public void buy(AtomicInteger tick){
+        Random random = new Random();
+
+        double randomValue = Math.abs(random.nextGaussian() * 5 + 10);
+        int randomNumber = (int) Math.round(randomValue);
+
+        int tickToPerformAction = tick.get() + randomNumber;
+        System.out.println(randomNumber);
+
+        while (tick.get() < tickToPerformAction) {
+                    
+                      
+        }
+        int randomInt = random.nextInt(6);
+    
+        try{
+            while(storeInventory.get(sections[randomInt]) == 0){
+                System.out.println("Nothign in this section gonna wait ");
+                wait();
+            }
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
+        
+        synchronized(storeInventory){
+            int currentValue = storeInventory.get(sections[randomInt]);
+
+            
+
+            // Increment the value by one
+            int newValue = currentValue - 1;
+            //System.out.println("IM HERE");
+
+            // Put the new value back into the dictionary
+            storeInventory.put(sections[randomInt], newValue);
+            System.out.printf("<%d> <%s> Customer Bought %s \n",tick.get(), Thread.currentThread().getId(),sections[randomInt]);
+        }
+        //notify();
+    }
 
     public void stock(Dictionary<String,Integer> inventory, AtomicInteger tick){
 
@@ -121,7 +157,7 @@ public class ThriftStore{
             //printInventory();
             //System.out.println(storeInventory);
             try{
-                Thread.sleep(50);
+                Thread.sleep(100);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
