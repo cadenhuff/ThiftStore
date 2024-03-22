@@ -39,10 +39,10 @@ public class Deliverer implements Runnable{
 
     public void run() {
         while(true){
-            
+            //I still dont know how right that is
             Random random = new Random();
 
-            double randomValue = Math.abs(random.nextGaussian() * 100 + 15);
+            double randomValue = Math.abs(random.nextGaussian() * 50 + 100);
 
             // Round the value to the nearest integer
             int randomInt = (int) Math.round(randomValue);

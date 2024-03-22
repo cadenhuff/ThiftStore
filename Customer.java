@@ -11,7 +11,7 @@ public class Customer implements Runnable {
         this.tick = tick;
     }
 
-
+    //This synchronized doesnt really do anything I feel like... I think I need to move buy to the ThriftStore func
     public synchronized void buy(){
         int tickToPerformAction = tick.get() + 10;
         while(tick.get() < tickToPerformAction){
